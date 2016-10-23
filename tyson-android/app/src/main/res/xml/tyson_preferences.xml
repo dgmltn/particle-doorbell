@@ -14,11 +14,9 @@
             android:max="6"
             android:title="Volume" />
 
-        <ListPreference
+        <com.dgmltn.tyson.RtttlRingtonePreference
             android:dependency="doorbell_enabled"
             android:key="doorbell_ringtone"
-            android:entries="@array/pref_doorbell_ringtone_entries"
-            android:entryValues="@array/pref_doorbell_ringtone_values"
             android:title="Ringtone" />
 
     </PreferenceCategory>

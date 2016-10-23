@@ -2,14 +2,14 @@
     <string name="app_name">Tyson</string>
 
     <string-array name="pref_doorbell_ringtone_entries">
+        <item>Haunted House</item>
+        <item>Knight Rider</item>
         <item>Ring Ding Dong</item>
-        <item>Happy Birthday</item>
-        <item>Yellow Submarine</item>
     </string-array>
     <string-array name="pref_doorbell_ringtone_values">
-        <item>ring-ding-dong</item>
-        <item>happy-birthday</item>
-        <item>yellow-submarine</item>
+        <item>hauntedhouse</item>
+        <item>knightrider</item>
+        <item>ringdingdong</item>
     </string-array>
 
     <string-array name="pref_chime_ringtone_entries">

@@ -10,30 +10,35 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<!-- Layout used by SeekBarPreference for the seekbar widget style. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Layout for a Preference in a PreferenceActivity. The
+     Preference is able to place a specific widget for its particular
+     type in the "widget_frame" layout. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:gravity="center_vertical">
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:gravity="center_vertical"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:clipToPadding="false">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dip"
         android:layout_marginEnd="8dip"
-        android:layout_marginTop="6dip"
-        android:layout_marginBottom="6dip">
+        android:layout_marginTop="16dip"
+        android:layout_marginBottom="16dip">
 
         <TextView
-            android:id="@+android:id/title"
+            android:id="@android:id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceListItem"
             android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
             tools:text="This is the Title"/>
 
         <TextView
@@ -44,17 +49,18 @@
             android:layout_alignStart="@android:id/title"
             android:textAppearance="?android:attr/textAppearanceListItemSecondary"
             android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="4"
+            android:maxLines="10"
+            android:ellipsize="end"
             tools:text="This is the summary"/>
 
-        <SeekBar
-            android:id="@+id/seekbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/summary"
-            android:layout_toEndOf="@android:id/widget_frame"
-            android:layout_alignParentEnd="true" />
-
     </RelativeLayout>
+
+    <!-- Preference should place its actual preference widget here. -->
+    <LinearLayout android:id="@+id/widget_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="end|center_vertical"
+        android:paddingStart="16dp"
+        android:orientation="vertical" />
 
 </LinearLayout>
