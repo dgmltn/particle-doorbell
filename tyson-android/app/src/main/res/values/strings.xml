@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Tyson</string>
+
+    <string-array name="pref_doorbell_ringtone_entries">
+        <item>Ring Ding Dong</item>
+        <item>Happy Birthday</item>
+        <item>Yellow Submarine</item>
+    </string-array>
+    <string-array name="pref_doorbell_ringtone_values">
+        <item>ring-ding-dong</item>
+        <item>happy-birthday</item>
+        <item>yellow-submarine</item>
+    </string-array>
+
+    <string-array name="pref_chime_ringtone_entries">
+        <item>Beep Beep</item>
+        <item>Beep Boop</item>
+    </string-array>
+    <string-array name="pref_chime_ringtone_values">
+        <item>beep-beep</item>
+        <item>beep-boop</item>
+    </string-array>
+
+</resources>

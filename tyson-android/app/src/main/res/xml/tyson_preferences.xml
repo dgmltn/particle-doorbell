@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Doorbell">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="doorbell_enabled"
+            android:title="Enabled" />
+
+        <com.dgmltn.tyson.SeekBarPreference
+            android:dependency="doorbell_enabled"
+            android:key="doorbell_volume"
+            android:max="6"
+            android:title="Volume" />
+
+        <ListPreference
+            android:dependency="doorbell_enabled"
+            android:key="doorbell_ringtone"
+            android:entries="@array/pref_doorbell_ringtone_entries"
+            android:entryValues="@array/pref_doorbell_ringtone_values"
+            android:title="Ringtone" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Chime">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="chime_enabled"
+            android:title="Enabled" />
+
+        <ListPreference
+            android:dependency="chime_enabled"
+            android:key="chime_ringtone"
+            android:entries="@array/pref_chime_ringtone_entries"
+            android:entryValues="@array/pref_chime_ringtone_values"
+            android:title="Ringtone" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
