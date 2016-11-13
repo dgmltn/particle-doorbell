@@ -32,8 +32,10 @@
 // http://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation
 // https://github.com/hitov/megamelody/tree/master/ringtones
 
-#include "SparkIntervalTimer/SparkIntervalTimer.h"
-#include "WebServer/WebServer.h"
+#include "SparkIntervalTimer.h"
+#include "WebServer.h"
+//#include "SparkIntervalTimer/firmware/SparkIntervalTimer.h"
+//#include "Webduino/firmware/WebServer.h"
 
 const int PIN_LED = D7;
 
