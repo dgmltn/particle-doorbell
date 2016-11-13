@@ -46,17 +46,27 @@ const int PIN_DOORBELL_BUTTON = A5;
 // Pin to enable amplifier
 const int PIN_AMP_ENABLE = A0;
 
-char* song = (char*)
+char song[1024];
+int enabled = true;
+
+int LIBRARY_SIZE = 4;
+char* library[] = {
+    "DrDre_Keep_Their_Heads_Ringing:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d",
+    "Barbie girl:d=4,o=5,b=125:8g#,8e,8g#,8c#6,a,p,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#",
+    "Happy Birthday Song:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f",
+    "MissionImp:d=16,o=6,b=95:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c7,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,a#5,8c,2p,32p,a#5,g5,2f#,32p,a#5,g5,2f,32p,a#5,g5,2e,d#,8d",
+    "YellowSubmarine:d=4,o=5,b=125:4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#,8f#,8f#,2f#",
+    "RickRoll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6."
+};
 
 //"20thCenFox:d=16,o=5,b=140:b,8p,b,b,2b,p,c6,32p,b,32p,c6,32p,b,32p,c6,32p,b,8p,b,b,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,g#,32p,a,32p,b,8p,b,b,2b,4p,8e,8g#,8b,1c#6,8f#,8a,8c#6,1e6,8a,8c#6,8e6,1e6,8b,8g#,8a,2b";
 //"2.34kHzBeeps:d=4,o=7,b=240:d,p,d,p,d,p,d,p";
 //"A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#";
-"Addams Family:d=8,o=5,b=160:c,4f,a,4f,c,4b4,2g,f,4e,g,4e,g4,4c,2f,c,4f,a,4f,c,4b4,2g,f,4e,c,4d,e,1f,c,d,e,f,1p,d,e,f#,g,1p,d,e,f#,g,4p,d,e,f#,g,4p,c,d,e,f";
+//"Addams Family:d=8,o=5,b=160:c,4f,a,4f,c,4b4,2g,f,4e,g,4e,g4,4c,2f,c,4f,a,4f,c,4b4,2g,f,4e,c,4d,e,1f,c,d,e,f,1p,d,e,f#,g,1p,d,e,f#,g,4p,d,e,f#,g,4p,c,d,e,f";
 //"AlarmDoorBeepBeep:d=4,o=7,b=125:16e,16p,16e";
 //"AlarmDoorBeepBoop:d=4,o=7,b=125:16e,16p,16c";
 //"Bond:d=4,o=5,b=80:32p,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d#6,16d#6,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d6,16c#6,16c#7,c.7,16g#6,16f#6,g#.6";
 //"Barbie girl:d=4,o=5,b=125:8g#,8e,8g#,8c#6,a,p,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#,8g#,8e,8g#,8c#6,a,p,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#,8g#,8e,8g#,8c#6,a,p,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#";
-// http://www.virtuallysmoothpiano.com/uploads/5/4/9/1/5491021/heads_ringing_piano.pdf
 //"DrDre_Keep_Their_Heads_Ringing:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d";
 //"Entertainer:d=4,o=5,b=140:8d,8d#,8e,c6,8e,c6,8e,2c.6,8c6,8d6,8d#6,8e6,8c6,8d6,e6,8b,d6,2c6,p,8d,8d#,8e,c6,8e,c6,8e,2c.6,8p,8a,8g,8f#,8a,8c6,e6,8d6,8c6,8a,2d6";
 //"Flinstones:d=4,o=5,b=40:32p,16f6,16a#,16a#6,32g6,16f6,16a#.,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,d6,16f6,16a#.,16a#6,32g6,16f6,16a#.,32f6,32f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,a#,16a6,16d.6,16a#6,32a6,32a6,32g6,32f#6,32a6,8g6,16g6,16c.6,32a6,32a6,32g6,32g6,32f6,32e6,32g6,8f6,16f6,16a#.,16a#6,32g6,16f6,16a#.,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c.6,32d6,32d#6,32f6,16a#,16c.6,32d6,32d#6,32f6,16a#6,16c7,8a#.6";
@@ -316,7 +326,7 @@ void playback_handler(void) {
 bool playing = false;
 
 void doorbell() {
-    if (playing == true) {
+    if (playing == true || enabled == false) {
         return;
     }
     VOLUME = 2;
@@ -327,7 +337,7 @@ void doorbell() {
 }
 
 void beepbeep() {
-    if (playing == true) {
+    if (playing == true || enabled == false) {
         return;
     }
     VOLUME = 0;
@@ -346,6 +356,29 @@ int particle_doorbell(String command) {
 int particle_beepbeep(String command) {
     beepbeep();
     return 69;
+}
+
+int particle_enable(String command) {
+    if (command == "0" || command == "mute") {
+        enabled = false;
+        return 0;
+    }
+    else {
+        enabled = true;
+        return 1;
+    }
+}
+
+int particle_ringtone(String command) {
+    int index = command.toInt();
+    int length = sizeof(library) / sizeof(char*);
+    if (index >= length) {
+        return -length;
+    }
+
+    strcpy(song, library[index]);
+    doorbell();
+    return index;
 }
 
 //----------------
@@ -410,8 +443,12 @@ void setup(void) {
 
     Particle.function("doorbell", particle_doorbell);
     Particle.function("beepbeep", particle_beepbeep);
+    Particle.function("enable", particle_enable);
+    Particle.function("ringtone", particle_ringtone);
 
     setupWebserver();
+
+    strcpy(song, library[0]);
  }
 
 bool clicked = false;
