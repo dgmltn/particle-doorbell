@@ -23,7 +23,6 @@ import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -72,8 +71,6 @@ public class RtttlRingtonePreference extends ListPreference {
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     mClickedDialogEntryIndex = which;
-                    String rtttl = getEntryValues()[mClickedDialogEntryIndex].toString();
-                    Log.e("DOUG", "play rtttl: " + rtttl);
                     start(rttlResIds[mClickedDialogEntryIndex]);
                 }
             });
@@ -134,7 +131,7 @@ public class RtttlRingtonePreference extends ListPreference {
                 String rawValue = getStringFromRaw(getContext(), rawResId);
                 int colon = rawValue.indexOf(':');
                 entries[count] = rawValue.substring(0, colon);
-                values[count] = rawValue;
+                values[count] = Integer.toString(count);
                 rttlResIds[count] = rawResId;
             }
             catch (Exception e) {

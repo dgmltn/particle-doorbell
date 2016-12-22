@@ -1,21 +1,54 @@
 package com.dgmltn.tyson;
 
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import java.lang.reflect.Field;
 
 public class MainActivity extends AppCompatPreferenceActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getFragmentManager()
+            .beginTransaction()
+            .replace(android.R.id.content, new TysonPreferenceFragment())
+            .commit();
+    }
+
+    public static class TysonPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.tyson_preferences);
+
+            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+            // to their values. When their values change, their summaries are
+            // updated to reflect the new value, per the Android Design
+            // guidelines.
+            bindPreferenceSummaryToValue(findPreference("ringtone"));
+
+            findPreference("doorbell").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //TODO: do doorbell
+                    return true;
+                }
+            });
+
+            findPreference("beepbeep").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    //TODO: do beepbeep
+                    return true;
+                }
+            });
+        }
+    }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -56,31 +89,5 @@ public class MainActivity extends AppCompatPreferenceActivity {
             PreferenceManager
                 .getDefaultSharedPreferences(preference.getContext())
                 .getString(preference.getKey(), ""));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getFragmentManager()
-            .beginTransaction()
-            .replace(android.R.id.content, new TysonPreferenceFragment())
-            .commit();
-    }
-
-    public static class TysonPreferenceFragment extends PreferenceFragment {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.tyson_preferences);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("doorbell_ringtone"));
-            bindPreferenceSummaryToValue(findPreference("chime_ringtone"));
-        }
     }
 }
