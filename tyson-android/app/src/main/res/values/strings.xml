@@ -1,24 +1,4 @@
 <resources>
     <string name="app_name">Tyson</string>
 
-    <string-array name="pref_doorbell_ringtone_entries">
-        <item>Haunted House</item>
-        <item>Knight Rider</item>
-        <item>Ring Ding Dong</item>
-    </string-array>
-    <string-array name="pref_doorbell_ringtone_values">
-        <item>hauntedhouse</item>
-        <item>knightrider</item>
-        <item>ringdingdong</item>
-    </string-array>
-
-    <string-array name="pref_chime_ringtone_entries">
-        <item>Beep Beep</item>
-        <item>Beep Boop</item>
-    </string-array>
-    <string-array name="pref_chime_ringtone_values">
-        <item>beep-beep</item>
-        <item>beep-boop</item>
-    </string-array>
-
 </resources>
