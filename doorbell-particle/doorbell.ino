@@ -51,6 +51,7 @@ int enabled = true;
 
 int LIBRARY_SIZE = 4;
 char* library[] = {
+    "Silent:d=4,b=125:p",
     "Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#",
     "Beep Beep:d=4,o=7,b=125:16e,16p,16e",
     "Beep Boop:d=4,o=7,b=125:16e,16p,16c",
