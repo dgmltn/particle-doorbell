@@ -46,10 +46,8 @@ const int PIN_DOORBELL_BUTTON = A5;
 // Pin to enable amplifier
 const int PIN_AMP_ENABLE = A0;
 
-char song[1024];
-int enabled = true;
+int ringtone_index = 0;
 
-int LIBRARY_SIZE = 4;
 char* library[] = {
     "Silent:d=4,b=125:p",
     "Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#",
@@ -67,6 +65,8 @@ char* library[] = {
     "We Wish you a Merry Christmas:d=8,o=5,b=140:4d,4g,g,a,g,f#,4e,4c,4e,4a,a,b,a,g,4f#,4d,4f#,4b,b,c6,b,a,4g,4e,4d,4e,4a,4f#,2g",
     "Yellow Submarine:d=4,o=5,b=125:4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#,8f#,8f#,2f#"
 };
+
+const int RINGTONE_COUNT = sizeof(library) / sizeof(char*);
 
 //-------------------------
 // Bit-banging RTTTL Player
@@ -250,7 +250,16 @@ bool next_rtttl() {
 //----------------------
 
 int SINE_LENGTH = 100;
-byte SINE[] = {127, 134, 142, 150, 158, 166, 173, 181, 188, 195, 201, 207, 213, 219, 224, 229, 234, 238, 241, 245, 247, 250, 251, 252, 253, 254, 253, 252, 251, 250, 247, 245, 241, 238, 234, 229, 224, 219, 213, 207, 201, 195, 188, 181, 173, 166, 158, 150, 142, 134, 127, 119, 111, 103, 95, 87, 80, 72, 65, 58, 52, 46, 40, 34, 29, 24, 19, 15, 12, 8, 6, 3, 2, 1, 0, 0, 0, 1, 2, 3, 6, 8, 12, 15, 19, 24, 29, 34, 40, 46, 52, 58, 65, 72, 80, 87, 95, 103, 111, 119,};
+byte SINE[] = {
+    127, 134, 142, 150, 158, 166, 173, 181, 188, 195, 201, 207, 213,
+    219, 224, 229, 234, 238, 241, 245, 247, 250, 251, 252, 253, 254,
+    253, 252, 251, 250, 247, 245, 241, 238, 234, 229, 224, 219, 213,
+    207, 201, 195, 188, 181, 173, 166, 158, 150, 142, 134, 127, 119,
+    111, 103,  95,  87,  80,  72,  65,  58,  52,  46,  40,  34,  29,
+     24,  19,  15,  12,   8,   6,   3,   2,   1,   0,   0,   0,   1,
+      2,   3,   6,   8,  12,  15,  19,  24,  29,  34,  40,  46,  52,
+     58,  65,  72,  80,  87,  95, 103, 111, 119
+ };
 
 IntervalTimer audio_clock;
 
@@ -298,22 +307,22 @@ void playback_handler(void) {
 bool playing = false;
 
 void doorbell() {
-    if (playing == true || enabled == false) {
+    if (playing == true) {
         return;
     }
     VOLUME = 2;
     playing = true;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
-    begin_rtttl(song);
+    begin_rtttl(library[ringtone_index]);
 }
 
 void beepbeep() {
-    if (playing == true || enabled == false) {
+    if (playing == true) {
         return;
     }
     VOLUME = 0;
-    char* beepbeep = (char*) "AlarmDoorBeepBeep:d=4,o=7,b=125:16e,16p,16e";
+    char* beepbeep = library[2];
     playing = true;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
@@ -330,25 +339,17 @@ int particle_beepbeep(String command) {
     return 69;
 }
 
-int particle_enable(String command) {
-    if (command == "0" || command == "mute") {
-        enabled = false;
-        return 0;
-    }
-    else {
-        enabled = true;
-        return 1;
-    }
-}
-
 int particle_ringtone(String command) {
-    int index = command.toInt();
-    int length = sizeof(library) / sizeof(char*);
-    if (index >= length) {
-        return -length;
+    if (command.length() == 0) {
+        return ringtone_index;
     }
 
-    strcpy(song, library[index]);
+    int index = command.toInt();
+    if (index >= RINGTONE_COUNT || index < 0) {
+        return -RINGTONE_COUNT;
+    }
+
+    ringtone_index = index;
     doorbell();
     return index;
 }
@@ -415,12 +416,9 @@ void setup(void) {
 
     Particle.function("doorbell", particle_doorbell);
     Particle.function("beepbeep", particle_beepbeep);
-    Particle.function("enable", particle_enable);
     Particle.function("ringtone", particle_ringtone);
 
     setupWebserver();
-
-    strcpy(song, library[0]);
  }
 
 bool clicked = false;
