@@ -46,7 +46,7 @@ const int PIN_DOORBELL_BUTTON = A5;
 // Pin to enable amplifier
 const int PIN_AMP_ENABLE = A0;
 
-int ringtone_index = 0;
+int ringtone_index = 4;
 
 char* library[] = {
     (char*)"Silent:d=4,b=125:p",
@@ -417,6 +417,8 @@ void setup(void) {
     Particle.function("doorbell", particle_doorbell);
     Particle.function("beepbeep", particle_beepbeep);
     Particle.function("ringtone", particle_ringtone);
+
+    Particle.variable("current", ringtone_index);
 
     setupWebserver();
  }
