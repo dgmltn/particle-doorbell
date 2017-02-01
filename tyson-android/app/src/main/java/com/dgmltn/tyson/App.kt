@@ -2,10 +2,6 @@ package com.dgmltn.tyson
 
 import android.app.Application
 import android.os.AsyncTask
-import android.util.Log
-
-import io.particle.android.sdk.cloud.ParticleCloud
-import io.particle.android.sdk.cloud.ParticleCloudException
 import io.particle.android.sdk.cloud.ParticleCloudSDK
 import io.particle.android.sdk.cloud.ParticleDevice
 import timber.log.Timber

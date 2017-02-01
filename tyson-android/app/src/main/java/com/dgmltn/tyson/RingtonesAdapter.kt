@@ -8,41 +8,37 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
-import timber.log.Timber
 
 class RingtonesAdapter(context: Context) : Adapter<RingtonesAdapter.ViewHolder>() {
 
-    private val inflater: LayoutInflater
-    private val items: List<RingtoneItem>
+    private val inflater = LayoutInflater.from(context)
+    private val items = RingtoneItem.generate(context)
 
     var listener: ((RingtoneItem) -> (Unit))? = null
 
-    init {
-        this.inflater = LayoutInflater.from(context)
-        this.items = RingtoneItem.generate(context)
-    }
+    var selectedIndex = -1
+        set(value) {
+            if (value != selectedIndex) {
+                val previous = selectedIndex
+                field = value
+                if (previous >= 0 && previous < itemCount) {
+                    notifyItemRangeChanged(previous, 1)
+                }
+                if (value >= 0 && value < itemCount) {
+                    notifyItemRangeChanged(value, 1)
+                }
+            }
+        }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(inflater.inflate(R.layout.row_ringtone, parent, false))
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
+            = ViewHolder(inflater.inflate(R.layout.row_ringtone, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
-    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+            = holder.bind(position)
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount() = items.size
 
-    fun getItem(position: Int): RingtoneItem {
-        return items[position]
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    // ViewHolder
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    private var selectedIndex = 0
+    fun getItem(position: Int) = items[position]
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -51,14 +47,8 @@ class RingtonesAdapter(context: Context) : Adapter<RingtonesAdapter.ViewHolder>(
 
         init {
             view.setOnClickListener {
-                val position = adapterPosition
-                if (position != selectedIndex) {
-                    val oldIndex = selectedIndex
-                    selectedIndex = position
-                    notifyItemRangeChanged(oldIndex, 1)
-                    notifyItemRangeChanged(selectedIndex, 1)
-                    listener?.invoke(getItem(selectedIndex))
-                }
+                selectedIndex = adapterPosition
+                listener?.invoke(getItem(selectedIndex))
             }
         }
 

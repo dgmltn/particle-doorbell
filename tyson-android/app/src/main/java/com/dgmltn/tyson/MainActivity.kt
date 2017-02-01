@@ -12,16 +12,25 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     val recycler by lazy { findViewById(R.id.ringtones) as RecyclerView }
+    val adapter by lazy { RingtonesAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        val adapter = RingtonesAdapter(this)
         adapter.listener = { particleSetRingtone(it.index) }
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        AsyncTask.execute {
+            val current = App.device.getIntVariable("current")
+            runOnUiThread { adapter.selectedIndex = current }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,17 +74,17 @@ class MainActivity : AppCompatActivity() {
         if (mediaPlayer == null) {
             Toast.makeText(this, "unable to play", Toast.LENGTH_SHORT).show()
         } else {
-            mediaPlayer!!.setOnCompletionListener(onCompletion)
-            mediaPlayer!!.start()
+            mediaPlayer?.setOnCompletionListener(onCompletion)
+            mediaPlayer?.start()
         }
     }
 
     fun stop() {
         if (mediaPlayer != null) {
-            if (mediaPlayer!!.isPlaying) {
-                mediaPlayer!!.stop()
+            if (mediaPlayer?.isPlaying ?: false) {
+                mediaPlayer?.stop()
             }
-            mediaPlayer!!.release()
+            mediaPlayer?.release()
             mediaPlayer = null
         }
     }
