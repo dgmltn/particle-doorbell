@@ -455,7 +455,7 @@ void loop(void) {
 
             // They pressed the button. Start the music
             if (clicked) {
-                Particle.publish("doorbell", NULL, 60, PRIVATE);
+                Particle.publish("doorbell", "ding dong!", 60, PRIVATE);
                 doorbell();
             }
         }
