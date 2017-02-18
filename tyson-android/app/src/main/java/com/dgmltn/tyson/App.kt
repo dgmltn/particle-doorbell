@@ -3,7 +3,6 @@ package com.dgmltn.tyson
 import android.app.Application
 import android.os.AsyncTask
 import io.particle.android.sdk.cloud.ParticleCloudSDK
-import io.particle.android.sdk.cloud.ParticleDevice
 import timber.log.Timber
 
 /**
@@ -21,10 +20,6 @@ class App : Application() {
             // Don't log on production
         }
         ParticleCloudSDK.init(this)
-
-        AsyncTask.execute {
-            device.refresh()
-        }
     }
 
     companion object {
@@ -36,9 +31,10 @@ class App : Application() {
             it
         }
 
-        val device: ParticleDevice by lazy {
-            val it = cloud.getDevice(BuildConfig.PARTICLE_TYSON_DEVICE_ID)
-            Timber.e("Got Device")
+        val device: IDoorbellDevice by lazy {
+            val it = ParticleDoorbellDevice(cloud.getDevice(BuildConfig.PARTICLE_TYSON_DEVICE_ID))
+            //val it = DemoDoorbellDevice()
+            Timber.e("Got Device: ${it.javaClass.simpleName}")
             it
         }
     }

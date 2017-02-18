@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        adapter.listener = { particleSetRingtone(it.index) }
+        adapter.listener = { deviceSetRingtone(it.index) }
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
     }
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         AsyncTask.execute {
-            val current = App.device.getIntVariable("current")
+            val current = App.device.getRingtone()
             runOnUiThread { adapter.selectedIndex = current }
         }
     }
@@ -39,21 +39,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun doBeepbeep() {
         AsyncTask.execute {
-            App.device.callFunction("beepbeep")
+            App.device.beepbeep()
         }
     }
 
     private fun doDoorbell() {
         AsyncTask.execute {
-            App.device.callFunction("doorbell")
+            App.device.dingdong()
         }
     }
 
-    private fun particleSetRingtone(index: Int) {
-        Timber.e("particleSetRingtone($index)")
+    private fun deviceSetRingtone(index: Int) {
+        Timber.e("deviceSetRingtone($index)")
         AsyncTask.execute {
-            val sindex = "$index"
-            App.device.callFunction("ringtone", listOf(sindex))
+            App.device.setRingtone(index)
         }
     }
 
