@@ -1,6 +1,3 @@
 [submodule "doorbell-particle/SparkIntervalTimer"]
 	path = doorbell-particle/SparkIntervalTimer
 	url = https://github.com/pkourany/SparkIntervalTimer.git
-[submodule "doorbell-particle/Webduino"]
-	path = doorbell-particle/Webduino
-	url = https://github.com/m-mcgowan/Webduino.git
