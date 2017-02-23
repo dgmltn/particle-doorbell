@@ -1,3 +1,6 @@
 [submodule "doorbell-particle/SparkIntervalTimer"]
 	path = doorbell-particle/SparkIntervalTimer
 	url = https://github.com/pkourany/SparkIntervalTimer.git
+[submodule "doorbell-particle/MQTT"]
+	path = doorbell-particle/MQTT
+	url = https://github.com/hirotakaster/MQTT.git
