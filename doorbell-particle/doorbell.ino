@@ -33,9 +33,7 @@
 // https://github.com/hitov/megamelody/tree/master/ringtones
 
 #include "SparkIntervalTimer.h"
-#include "WebServer.h"
-//#include "SparkIntervalTimer/firmware/SparkIntervalTimer.h"
-//#include "Webduino/firmware/WebServer.h"
+#include "MQTT.h"
 
 const int PIN_LED = D7;
 
@@ -265,6 +263,7 @@ IntervalTimer audio_clock;
 
 // Bit shifting volume: 0-6
 int VOLUME = 0;
+int MUTE = 0;
 
 volatile float t = 0;
 volatile float step;
@@ -277,7 +276,7 @@ void noTone() {
 }
 
 void tone(int freq) {
-    if (freq == 0) {
+    if (freq == 0 || MUTE == 1) {
         noTone();
     }
     else {
@@ -306,7 +305,7 @@ void playback_handler(void) {
 
 bool playing = false;
 
-void doorbell() {
+void dingdong() {
     if (playing == true) {
         return;
     }
@@ -329,8 +328,8 @@ void beepbeep() {
     begin_rtttl(beepbeep);
 }
 
-int particle_doorbell(String command) {
-    doorbell();
+int particle_dingdong(String command) {
+    dingdong();
     return 42;
 }
 
@@ -350,54 +349,62 @@ int particle_ringtone(String command) {
     }
 
     ringtone_index = index;
-    doorbell();
+    dingdong();
     return index;
 }
 
 //----------------
-// Mini Web Server
+// MQTT
 //----------------
+void mqttCallback(char* topic, byte* payload, unsigned int length);
 
 char myIpString[24];
 
-#define PREFIX ""
-WebServer webserver(PREFIX, 80);
+byte server[] = { 10, 5, 23, 34 };
+MQTT mqttClient(server, 1883, mqttCallback);
 
-void webserver_beepbeep(WebServer &server, WebServer::ConnectionType type, char *, bool) {
-    server.httpSuccess("application/json");
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+    char p[length + 1];
+    memcpy(p, payload, length);
+    p[length] = NULL;
+    String message(p);
 
-    if (type != WebServer::HEAD) {
+    if (message.equals("beepbeep")) {
         beepbeep();
-        /* this defines some HTML text in read-only memory aka PROGMEM.
-         * This is needed to avoid having the string copied to our limited
-         * amount of RAM. */
-        P(okMessage) = "{\"status\": \"ok\"}";
-
-        /* this is a special form of print that outputs from PROGMEM */
-        server.printP(okMessage);
+    }
+    else if (message.equals("dingdong")) {
+        dingdong();
     }
 }
 
-void setupWebserver() {
-    // Report this device's ip address as a normal Particle variable
-    IPAddress myIp = WiFi.localIP();
-    sprintf(myIpString, "%d.%d.%d.%d", myIp[0], myIp[1], myIp[2], myIp[3]);
-    Particle.variable("ipAddress", myIpString, STRING);
+int mqtt_status = 0;
 
-    /* run the same command if you try to load /index.html, a common
-     * default page name */
-    webserver.addCommand("beepbeep", &webserver_beepbeep);
+bool setupMqtt() {
+    Particle.variable("mqttstatus", mqtt_status);
 
-    /* start the webserver */
-    webserver.begin();
+    // connect to the server
+    if (mqttClient.connect("doorbelljr")) {
+        // subscribe
+        mqttClient.subscribe("devices/doorbelljr/in");
+        return true;
+    }
+    return false;
 }
 
-void loopWebserver() {
-    char buff[64];
-    int len = 64;
+void loopMqtt() {
+    mqtt_status = mqttClient.isConnected() ? 1 : 0;
 
-    /* process incoming connections one at a time forever */
-    webserver.processConnection(buff, &len);
+    if (!mqttClient.loop()) {
+        // Not connected, try to reconnect
+        if (!setupMqtt()) {
+            // Reconnect failed, wait a few seconds
+            delay(5000);
+        }
+    }
+}
+
+bool mqttPublishDoorbellButtonPressed() {
+    return mqttClient.publish("devices/doorbelljr/out", "ding dong!");
 }
 
 //-------------------
@@ -414,13 +421,14 @@ void setup(void) {
     digitalWrite(PIN_LED, LOW);
     digitalWrite(PIN_AMP_ENABLE, LOW);
 
-    Particle.function("doorbell", particle_doorbell);
+    Particle.function("doorbell", particle_dingdong);
+    Particle.function("dingdong", particle_dingdong);
     Particle.function("beepbeep", particle_beepbeep);
     Particle.function("ringtone", particle_ringtone);
 
     Particle.variable("current", ringtone_index);
 
-    setupWebserver();
+    setupMqtt();
  }
 
 bool clicked = false;
@@ -456,10 +464,11 @@ void loop(void) {
             // They pressed the button. Start the music
             if (clicked) {
                 Particle.publish("doorbell", "ding dong!", 60, PRIVATE);
-                doorbell();
+                mqttPublishDoorbellButtonPressed();
+                dingdong();
             }
         }
 
-        loopWebserver();
+        loopMqtt();
     }
 }
