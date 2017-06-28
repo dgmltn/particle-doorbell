@@ -1,5 +1,5 @@
 doorbell.ino
-MQTT/firmware/MQTT.h
-MQTT/firmware/MQTT.cpp
-SparkIntervalTimer/firmware/SparkIntervalTimer.h
-SparkIntervalTimer/firmware/SparkIntervalTimer.cpp
+MQTT/src/MQTT.h
+MQTT/src/MQTT.cpp
+SparkIntervalTimer/src/SparkIntervalTimer.h
+SparkIntervalTimer/src/SparkIntervalTimer.cpp
