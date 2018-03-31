@@ -314,6 +314,7 @@ void dingdong() {
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
     begin_rtttl(library[ringtone_index]);
+    mqttPublishDoorbellState("doorbell");
 }
 
 void beepbeep() {
@@ -326,6 +327,7 @@ void beepbeep() {
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
     begin_rtttl(beepbeep);
+    mqttPublishDoorbellState("beepbeep");
 }
 
 int particle_dingdong(String command) {
@@ -349,6 +351,7 @@ int particle_ringtone(String command) {
     }
 
     ringtone_index = index;
+    mqttPublishDoorbellRingtone(ringtone_index);
     dingdong();
     return index;
 }
@@ -385,7 +388,8 @@ bool setupMqtt() {
     // connect to the server
     if (mqttClient.connect("doorbelljr")) {
         // subscribe
-        mqttClient.subscribe("devices/doorbelljr/in");
+        mqttClient.subscribe("cda/downstairs/hallway/doorbell/device/command");
+        mqttPublishDoorbellRingtone(ringtone_index);
         return true;
     }
     return false;
@@ -403,8 +407,17 @@ void loopMqtt() {
     }
 }
 
-bool mqttPublishDoorbellButtonPressed() {
-    return mqttClient.publish("devices/doorbelljr/out", "ding dong!");
+bool mqttPublishDoorbellButtonPressed(boolean pressed) {
+    return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", pressed ? "pressed" : "unpressed");
+}
+
+bool mqttPublishDoorbellState(const char* state) {
+    return mqttClient.publish("cda/downstairs/hallway/doorbell/state", state);
+}
+
+bool mqttPublishDoorbellRingtone(int ringtone) {
+    char buf[4];
+    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", itoa(ringtone, buf, 10));
 }
 
 //-------------------
@@ -431,7 +444,7 @@ void setup(void) {
     setupMqtt();
  }
 
-bool clicked = false;
+bool pressed = false;
 
 void loop(void) {
     // The main loop() processes one note of the song at a time
@@ -449,6 +462,7 @@ void loop(void) {
             playing = false;
             analogWrite(DAC1, 0);
             analogWrite(DAC2, 0);
+            mqttPublishDoorbellState("silent");
         }
     }
 
@@ -457,16 +471,17 @@ void loop(void) {
         bool state = digitalRead(PIN_DOORBELL_BUTTON) == LOW;
 
         // Check if the pushbutton changed value
-        if (state != clicked) {
+        if (state != pressed) {
             delay(500); // Debounce
-            clicked = state;
+            pressed = state;
 
             // They pressed the button. Start the music
-            if (clicked) {
+            if (pressed) {
                 Particle.publish("doorbell", "ding dong!", 60, PRIVATE);
-                mqttPublishDoorbellButtonPressed();
                 dingdong();
             }
+
+            mqttPublishDoorbellButtonPressed(pressed);
         }
 
         loopMqtt();
