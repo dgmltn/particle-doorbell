@@ -314,7 +314,7 @@ void dingdong() {
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
     begin_rtttl(library[ringtone_index]);
-    mqttPublishDoorbellState("doorbell");
+    mqttPublishDoorbellState("doorbell", false);
 }
 
 void beepbeep() {
@@ -327,7 +327,7 @@ void beepbeep() {
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
     begin_rtttl(beepbeep);
-    mqttPublishDoorbellState("beepbeep");
+    mqttPublishDoorbellState("beepbeep", false);
 }
 
 int particle_dingdong(String command) {
@@ -408,16 +408,22 @@ void loopMqtt() {
 }
 
 bool mqttPublishDoorbellButtonPressed(boolean pressed) {
-    return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", pressed ? "pressed" : "unpressed");
+    if (pressed) {
+        return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", (uint8_t*)"pressed", 7, false);
+    }
+    else {
+        return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", (uint8_t*)"unpressed", 9, true);
+    }
 }
 
-bool mqttPublishDoorbellState(const char* state) {
-    return mqttClient.publish("cda/downstairs/hallway/doorbell/state", state);
+bool mqttPublishDoorbellState(const char* state, boolean retain) {
+    return mqttClient.publish("cda/downstairs/hallway/doorbell/state", (uint8_t*)state, strlen(state), retain);
 }
 
 bool mqttPublishDoorbellRingtone(int ringtone) {
     char buf[4];
-    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", itoa(ringtone, buf, 10));
+    itoa(ringtone, buf, 10);
+    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", (uint8_t*)buf, strlen(buf), true);
 }
 
 //-------------------
@@ -462,7 +468,7 @@ void loop(void) {
             playing = false;
             analogWrite(DAC1, 0);
             analogWrite(DAC2, 0);
-            mqttPublishDoorbellState("silent");
+            mqttPublishDoorbellState("silent", true);
         }
     }
 
