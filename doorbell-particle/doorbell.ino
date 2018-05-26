@@ -363,7 +363,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length);
 
 char myIpString[24];
 
-byte server[] = { 10, 5, 23, 34 };
+byte server[] = { 10, 5, 23, 166 };
 MQTT mqttClient(server, 1883, mqttCallback);
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
@@ -430,6 +430,8 @@ bool mqttPublishDoorbellRingtone(int ringtone) {
 // MAIN PROGRAM
 //-------------------
 
+uint32_t lastReset = 0;
+
 void setup(void) {
     pinMode(DAC1, OUTPUT);
     pinMode(DAC2, OUTPUT);
@@ -446,6 +448,8 @@ void setup(void) {
     Particle.function("ringtone", particle_ringtone);
 
     Particle.variable("current", ringtone_index);
+
+    lastReset = millis();
 
     setupMqtt();
  }
@@ -488,6 +492,11 @@ void loop(void) {
             }
 
             mqttPublishDoorbellButtonPressed(pressed);
+        }
+
+        // Reset every 24 hours
+        if (millis() - lastReset > 24 * 60 * 60 * 1000UL) {
+          System.reset();
         }
 
         loopMqtt();
