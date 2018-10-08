@@ -44,27 +44,32 @@ const int PIN_DOORBELL_BUTTON = A5;
 // Pin to enable amplifier
 const int PIN_AMP_ENABLE = A0;
 
-int ringtone_index = 4;
+char beepbeepBuffer[1024];
+char doorbellBuffer[1024];
 
-char* library[] = {
-    (char*)"Silent:d=4,b=125:p",
-    (char*)"Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#",
-    (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e",
-    (char*)"Beep Boop:d=4,o=7,b=125:16e,16p,16c",
-    (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d",
-    (char*)"Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#",
-    (char*)"Happy Birthday Song:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f",
-    (char*)"Jeopardy:d=4,o=6,b=125:c,f,c,f5,c,f,2c,c,f,c,f,a.,8g,8f,8e,8d,8c#,c,f,c,f5,c,f,2c,f.,8d,c,a#5,a5,g5,f5,p,d#,g#,d#,g#5,d#,g#,2d#,d#,g#,d#,g#,c.7,8a#,8g#,8g,8f,8e,d#,g#,d#,g#5,d#,g#,2d#,g#.,8f,d#,c#,c,p,a#5,p,g#.5,d#,g#",
-    (char*)"Mission Impossible:d=16,o=5,b=100:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,p,a#4,c",
-    (char*)"Rick Roll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.",
-    (char*)"SMB Theme:d=4,o=5,b=100:16e6,16e6,32p,8e6,16c6,8e6,8g6,8p,8g,8p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,16p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16c7,16p,16c7,16c7,p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16d#6,8p,16d6,8p,16c6",
-    (char*)"Star Wars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6",
-    (char*)"Top Gun:d=4,o=4,b=31:32p,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,16f,d#,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,g#",
-    (char*)"We Wish you a Merry Christmas:d=8,o=5,b=140:4d,4g,g,a,g,f#,4e,4c,4e,4a,a,b,a,g,4f#,4d,4f#,4b,b,c6,b,a,4g,4e,4d,4e,4a,4f#,2g",
-    (char*)"Yellow Submarine:d=4,o=5,b=125:4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#,8f#,8f#,2f#"
-};
+char* doorbellInit = (char*)"Ghost Busters:d=4,o=5,b=112:16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8b,2p,16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8c#6,8b";
+char* beepbeepInit = (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e";
 
-const int RINGTONE_COUNT = sizeof(library) / sizeof(char*);
+// Here are some other good ones:
+//    (char*)"Silent:d=4,b=125:p",
+//    (char*)"Addams Family:d=4,o=6,b=50:32p,32c#,16f#,32a#,16f#,32c#,16c,8g#,32f#,16f,32g#,16f,32c#,16a#5,8f#,32c#,16f#,32a#,16f#,32c#,16c,8g#,32f#,16f,32c#,16d#,32f,f#",
+//    (char*)"Back to the Future:d=16,o=5,b=200:4g.,p,4c.,p,2f#.,p,g.,p,a.,p,8g,p,8e,p,8c,p,4f#,p,g.,p,a.,p,8g.,p,8d.,p,8g.,p,8d.6,p,4d.6,p,4c#6,p,b.,p,c#.6,p,2d.6",
+//    (char*)"Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#",
+//    (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e",
+//    (char*)"Beep Boop:d=4,o=7,b=125:16e,16p,16c",
+//    (char*)"Cantina:d=8,o=5,b=250:a,p,d6,p,a,p,d6,p,a,d6,p,a,p,g#,4a,a,g#,a,4g,f#,g,f#,4f.,d.,16p,4p.,a,p,d6,p,a,p,d6,p,a,d6,p,a,p,g#,a,p,g,p,4g.,f#,g,p,c6,4a#,4a,4g",
+//    (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d",
+//    (char*)"Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#",
+//    (char*)"Ghost Busters:d=4,o=5,b=112:16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8b,2p,16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8c#6,8b",
+//    (char*)"Happy Birthday Song:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f",
+//    (char*)"Jeopardy:d=4,o=6,b=125:c,f,c,f5,c,f,2c,c,f,c,f,a.,8g,8f,8e,8d,8c#,c,f,c,f5,c,f,2c,f.,8d,c,a#5,a5,g5,f5,p,d#,g#,d#,g#5,d#,g#,2d#,d#,g#,d#,g#,c.7,8a#,8g#,8g,8f,8e,d#,g#,d#,g#5,d#,g#,2d#,g#.,8f,d#,c#,c,p,a#5,p,g#.5,d#,g#",
+//    (char*)"Mission Impossible:d=16,o=5,b=100:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,p,a#4,c",
+//    (char*)"Rick Roll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.",
+//    (char*)"SMB Theme:d=4,o=5,b=100:16e6,16e6,32p,8e6,16c6,8e6,8g6,8p,8g,8p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,16p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,16g.,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16c7,16p,16c7,16c7,p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16d#6,8p,16d6,8p,16c6",
+//    (char*)"Star Wars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6",
+//    (char*)"Top Gun:d=4,o=4,b=31:32p,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,16f,d#,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,g#",
+//    (char*)"We Wish you a Merry Christmas:d=8,o=5,b=140:4d,4g,g,a,g,f#,4e,4c,4e,4a,a,b,a,g,4f#,4d,4f#,4b,b,c6,b,a,4g,4e,4d,4e,4a,4f#,2g",
+//    (char*)"Yellow Submarine:d=4,o=5,b=125:4c#6,4c#6,4c#6,8c#6,8d#6,8g#,8g#,8g#,8g#,2g#,8g#,8g#,4g#,2g#,8f#,8f#,8f#,8f#,2f#"
 
 //-------------------------
 // Bit-banging RTTTL Player
@@ -313,7 +318,7 @@ void dingdong() {
     playing = true;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
-    begin_rtttl(library[ringtone_index]);
+    begin_rtttl(doorbellBuffer);
     mqttPublishDoorbellState("doorbell", false);
 }
 
@@ -322,11 +327,10 @@ void beepbeep() {
         return;
     }
     VOLUME = 0;
-    char* beepbeep = library[2];
     playing = true;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
-    begin_rtttl(beepbeep);
+    begin_rtttl(beepbeepBuffer);
     mqttPublishDoorbellState("beepbeep", false);
 }
 
@@ -338,22 +342,6 @@ int particle_dingdong(String command) {
 int particle_beepbeep(String command) {
     beepbeep();
     return 69;
-}
-
-int particle_ringtone(String command) {
-    if (command.length() == 0) {
-        return ringtone_index;
-    }
-
-    int index = command.toInt();
-    if (index >= RINGTONE_COUNT || index < 0) {
-        return -RINGTONE_COUNT;
-    }
-
-    ringtone_index = index;
-    mqttPublishDoorbellRingtone(ringtone_index);
-    dingdong();
-    return index;
 }
 
 //----------------
@@ -369,7 +357,7 @@ MQTT mqttClient(server, 1883, mqttCallback);
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
     char p[length + 1];
     memcpy(p, payload, length);
-    p[length] = NULL;
+    p[length] = '\0';
     String message(p);
 
     if (message.equals("beepbeep")) {
@@ -378,6 +366,23 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     else if (message.equals("dingdong")) {
         dingdong();
     }
+    else if (message.startsWith("dingdong=")) {
+        setNewRingtone(p + 9);
+        dingdong();
+    }
+}
+
+void setNewRingtone(char* buffer) {
+    int len = min(strlen(buffer), sizeof(doorbellBuffer) - 1);
+    memset(doorbellBuffer, 0, sizeof(doorbellBuffer));
+    memcpy(doorbellBuffer, buffer, len);
+    mqttPublishDoorbellRingtone();
+}
+
+void setNewBeepbeep(char *buffer) {
+    int len = min(strlen(buffer), sizeof(beepbeepBuffer) - 1);
+    memset(beepbeepBuffer, 0, sizeof(beepbeepBuffer));
+    memcpy(beepbeepBuffer, buffer, len);
 }
 
 int mqtt_status = 0;
@@ -389,7 +394,7 @@ bool setupMqtt() {
     if (mqttClient.connect("doorbelljr")) {
         // subscribe
         mqttClient.subscribe("cda/downstairs/hallway/doorbell/device/command");
-        mqttPublishDoorbellRingtone(ringtone_index);
+        mqttPublishDoorbellRingtone();
         return true;
     }
     return false;
@@ -420,10 +425,8 @@ bool mqttPublishDoorbellState(const char* state, boolean retain) {
     return mqttClient.publish("cda/downstairs/hallway/doorbell/state", (uint8_t*)state, strlen(state), retain);
 }
 
-bool mqttPublishDoorbellRingtone(int ringtone) {
-    char buf[4];
-    itoa(ringtone, buf, 10);
-    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", (uint8_t*)buf, strlen(buf), true);
+bool mqttPublishDoorbellRingtone() {
+    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", (uint8_t*)doorbellBuffer, strlen(doorbellBuffer), true);
 }
 
 //-------------------
@@ -445,11 +448,11 @@ void setup(void) {
     Particle.function("doorbell", particle_dingdong);
     Particle.function("dingdong", particle_dingdong);
     Particle.function("beepbeep", particle_beepbeep);
-    Particle.function("ringtone", particle_ringtone);
-
-    Particle.variable("current", ringtone_index);
 
     lastReset = millis();
+
+    setNewRingtone(doorbellInit);
+    setNewBeepbeep(beepbeepInit);
 
     setupMqtt();
  }
