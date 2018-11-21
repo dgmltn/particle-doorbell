@@ -21,10 +21,10 @@ class RingtonesAdapter(context: Context) : Adapter<RingtonesAdapter.ViewHolder>(
             if (value != selectedIndex) {
                 val previous = selectedIndex
                 field = value
-                if (previous >= 0 && previous < itemCount) {
+                if (previous in 0 until itemCount) {
                     notifyItemRangeChanged(previous, 1)
                 }
-                if (value >= 0 && value < itemCount) {
+                if (value in 0 until itemCount) {
                     notifyItemRangeChanged(value, 1)
                 }
             }

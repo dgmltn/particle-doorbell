@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.dgmltn.doorbell"
-        minSdkVersion 18
-        targetSdkVersion 23
+        minSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }

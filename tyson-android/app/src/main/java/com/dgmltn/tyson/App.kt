@@ -32,8 +32,8 @@ class App : Application() {
         }
 
         val device: IDoorbellDevice by lazy {
-            val it = ParticleDoorbellDevice(cloud.getDevice(BuildConfig.PARTICLE_TYSON_DEVICE_ID))
-            //val it = DemoDoorbellDevice()
+            //val it = ParticleDoorbellDevice(cloud.getDevice(BuildConfig.PARTICLE_TYSON_DEVICE_ID))
+            val it = DemoDoorbellDevice()
             Timber.e("Got Device: ${it.javaClass.simpleName}")
             it
         }

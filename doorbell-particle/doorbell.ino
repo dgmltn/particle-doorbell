@@ -47,7 +47,7 @@ const int PIN_AMP_ENABLE = A0;
 char beepbeepBuffer[1024];
 char doorbellBuffer[1024];
 
-char* doorbellInit = (char*)"Ghost Busters:d=4,o=5,b=112:16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8b,2p,16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8c#6,8b";
+char* doorbellInit = (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f";
 char* beepbeepInit = (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e";
 
 // Here are some other good ones:
@@ -61,7 +61,7 @@ char* beepbeepInit = (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e";
 //    (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d",
 //    (char*)"Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#",
 //    (char*)"Ghost Busters:d=4,o=5,b=112:16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8b,2p,16b,16b,8d#6,8b,8c#6,8a,2p,16b,16b,16b,16b,8a,8c#6,8b",
-//    (char*)"Happy Birthday Song:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f",
+//    (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f",
 //    (char*)"Jeopardy:d=4,o=6,b=125:c,f,c,f5,c,f,2c,c,f,c,f,a.,8g,8f,8e,8d,8c#,c,f,c,f5,c,f,2c,f.,8d,c,a#5,a5,g5,f5,p,d#,g#,d#,g#5,d#,g#,2d#,d#,g#,d#,g#,c.7,8a#,8g#,8g,8f,8e,d#,g#,d#,g#5,d#,g#,2d#,g#.,8f,d#,c#,c,p,a#5,p,g#.5,d#,g#",
 //    (char*)"Mission Impossible:d=16,o=5,b=100:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,p,a#4,c",
 //    (char*)"Rick Roll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.",
@@ -352,7 +352,9 @@ void mqttCallback(char* topic, byte* payload, unsigned int length);
 char myIpString[24];
 
 byte server[] = { 10, 5, 23, 166 };
-MQTT mqttClient(server, 1883, mqttCallback);
+
+// Set max mqtt message size to 1024 bytes
+MQTT mqttClient(server, 1883, MQTT_DEFAULT_KEEPALIVE, mqttCallback, 1024);
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
     char p[length + 1];
