@@ -370,7 +370,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     }
     else if (message.startsWith("dingdong=")) {
         setNewRingtone(p + 9);
-        dingdong();
     }
 }
 
