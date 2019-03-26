@@ -47,7 +47,9 @@ const int PIN_AMP_ENABLE = A0;
 char beepbeepBuffer[1024];
 char doorbellBuffer[1024];
 
-char* doorbellInit = (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f";
+char* happyBirthday = (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f";
+
+char* doorbellInit = (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d";
 char* beepbeepInit = (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e";
 
 // Here are some other good ones:
@@ -318,7 +320,15 @@ void dingdong() {
     playing = true;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
-    begin_rtttl(doorbellBuffer);
+
+    // Special days :)
+    if ((Time.month() == 1 && Time.day() == 20) || (Time.month() == 11 && Time.day() == 18)) {
+      begin_rtttl(happyBirthday);
+    }
+    else {
+      begin_rtttl(doorbellBuffer);
+    }
+
     mqttPublishDoorbellState("doorbell", false);
 }
 
@@ -351,7 +361,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length);
 
 char myIpString[24];
 
-byte server[] = { 10, 5, 23, 166 };
+byte server[] = { 10, 5, 23, 6 };
 
 // Set max mqtt message size to 1024 bytes
 MQTT mqttClient(server, 1883, MQTT_DEFAULT_KEEPALIVE, mqttCallback, 1024);
