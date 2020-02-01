@@ -47,6 +47,7 @@ const int PIN_AMP_ENABLE = A0;
 char beepbeepBuffer[1024];
 char doorbellBuffer[1024];
 
+char* rickRoll = (char*)"Rick Roll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.";
 char* happyBirthday = (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f";
 
 char* doorbellInit = (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,2d,8a4,16a4,8a4,8e,8e,2d";
@@ -322,8 +323,22 @@ void dingdong() {
     digitalWrite(PIN_AMP_ENABLE, HIGH);
 
     // Special days :)
-    if ((Time.month() == 1 && Time.day() == 20) || (Time.month() == 11 && Time.day() == 18)) {
+    int month = Time.month();
+    int day = Time.day();
+    if (month == 1 && day == 20) {
       begin_rtttl(happyBirthday);
+    }
+    else if (month == 3 && day == 31) {
+      begin_rtttl(happyBirthday);
+    }
+    else if (month == 7 && day == 13) {
+      begin_rtttl(happyBirthday);
+    }
+    else if (month == 11 && day == 18) {
+      begin_rtttl(happyBirthday);
+    }
+    else if (random(5) == 0) {
+      begin_rtttl(rickRoll);
     }
     else {
       begin_rtttl(doorbellBuffer);
