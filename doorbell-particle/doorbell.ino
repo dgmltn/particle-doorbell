@@ -44,6 +44,15 @@ const int PIN_DOORBELL_BUTTON = A5;
 // Pin to enable amplifier
 const int PIN_AMP_ENABLE = A0;
 
+#define BELL_STATE_SILENT 0
+#define BELL_STATE_DOORBELL 1
+#define BELL_STATE_BEEPBEEP 2
+int bellState = BELL_STATE_SILENT;
+
+bool buttonPressed = false;
+
+
+
 char beepbeepBuffer[1024];
 char doorbellBuffer[1024];
 
@@ -344,7 +353,8 @@ void dingdong() {
       begin_rtttl(doorbellBuffer);
     }
 
-    mqttPublishDoorbellState("doorbell", false);
+    bellState = BELL_STATE_DOORBELL;
+    mqttPublishState();
 }
 
 void beepbeep() {
@@ -353,10 +363,11 @@ void beepbeep() {
     }
     VOLUME = 0;
     playing = true;
+    bellState = BELL_STATE_BEEPBEEP;
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_AMP_ENABLE, HIGH);
     begin_rtttl(beepbeepBuffer);
-    mqttPublishDoorbellState("beepbeep", false);
+    mqttPublishState();
 }
 
 int particle_dingdong(String command) {
@@ -419,7 +430,7 @@ bool setupMqtt() {
     // connect to the server
     if (mqttClient.connect("doorbelljr")) {
         // subscribe
-        mqttClient.subscribe("cda/downstairs/hallway/doorbell/device/command");
+        mqttClient.subscribe("devices/particle/doorbell/command");
         mqttPublishDoorbellRingtone();
         return true;
     }
@@ -438,21 +449,18 @@ void loopMqtt() {
     }
 }
 
-bool mqttPublishDoorbellButtonPressed(boolean pressed) {
-    if (pressed) {
-        return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", (uint8_t*)"pressed", 7, false);
-    }
-    else {
-        return mqttClient.publish("cda/outside/frontporch/doorbell/button/state", (uint8_t*)"unpressed", 9, true);
-    }
-}
+char mqttPublishBuffer[256];
 
-bool mqttPublishDoorbellState(const char* state, boolean retain) {
-    return mqttClient.publish("cda/downstairs/hallway/doorbell/state", (uint8_t*)state, strlen(state), retain);
+bool mqttPublishState() {
+    bool retain = true;
+    const char* bellStateStr = bellState == BELL_STATE_BEEPBEEP ? "beepbeep" : bellState == BELL_STATE_DOORBELL ? "doorbell" : "silent";
+    const char* buttonStateStr = buttonPressed ? "pressed" : "unpressed";
+    sprintf(mqttPublishBuffer, "{\"bellState\":\"%s\",\"buttonState\":\"%s\",\"timestamp\":\"%s\"}", bellStateStr, buttonStateStr, Time.timeStr().c_str());
+    return mqttClient.publish("devices/particle/doorbell/state", (uint8_t*)mqttPublishBuffer, strlen(mqttPublishBuffer), retain);
 }
 
 bool mqttPublishDoorbellRingtone() {
-    return mqttClient.publish("cda/downstairs/hallway/doorbell/ringtone", (uint8_t*)doorbellBuffer, strlen(doorbellBuffer), true);
+    return mqttClient.publish("devices/particle/doorbell/ringtone", (uint8_t*)doorbellBuffer, strlen(doorbellBuffer), true);
 }
 
 //-------------------
@@ -483,8 +491,6 @@ void setup(void) {
     setupMqtt();
  }
 
-bool pressed = false;
-
 void loop(void) {
     // The main loop() processes one note of the song at a time
     // to avoid blocking the background tasks for too long or else
@@ -501,7 +507,8 @@ void loop(void) {
             playing = false;
             analogWrite(DAC1, 0);
             analogWrite(DAC2, 0);
-            mqttPublishDoorbellState("silent", true);
+            bellState = BELL_STATE_SILENT;
+            mqttPublishState();
         }
     }
 
@@ -510,17 +517,17 @@ void loop(void) {
         bool state = digitalRead(PIN_DOORBELL_BUTTON) == LOW;
 
         // Check if the pushbutton changed value
-        if (state != pressed) {
+        if (state != buttonPressed) {
             delay(500); // Debounce
-            pressed = state;
+            buttonPressed = state;
 
             // They pressed the button. Start the music
-            if (pressed) {
+            if (buttonPressed) {
                 Particle.publish("doorbell", "ding dong!", 60, PRIVATE);
                 dingdong();
             }
 
-            mqttPublishDoorbellButtonPressed(pressed);
+            mqttPublishState();
         }
 
         // Reset every 24 hours
