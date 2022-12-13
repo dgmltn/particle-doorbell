@@ -56,6 +56,7 @@ bool buttonPressed = false;
 char beepbeepBuffer[1024];
 char doorbellBuffer[1024];
 
+char* silence = (char*)"Silence:d=4,b=125:p";
 char* rickRoll = (char*)"Rick Roll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.";
 char* happyBirthday = (char*)"Happy Birthday:d=4,o=5,b=125:16c,32p,32c,32p,8d,32p,8c,32p,8f,32p,e,16p,16c,32p,32c,32p,8d,32p,8c,32p,8g,32p,f,8p,16c,32p,32c,32p,8c6,32p,8a,32p,8f,32p,8e,32p,8d,32p,16a#,32p,32a#,32p,8a,32p,8f,32p,8g,32p,f";
 
@@ -63,7 +64,7 @@ char* doorbellInit = (char*)"DrDre Keep Their Heads Ringin:d=4,o=5,b=100:4a4,4e,
 char* beepbeepInit = (char*)"Beep Beep:d=4,o=7,b=125:16e,16p,16e";
 
 // Here are some other good ones:
-//    (char*)"Silent:d=4,b=125:p",
+//    (char*)"Silence:d=4,b=125:p",
 //    (char*)"Addams Family:d=4,o=6,b=50:32p,32c#,16f#,32a#,16f#,32c#,16c,8g#,32f#,16f,32g#,16f,32c#,16a#5,8f#,32c#,16f#,32a#,16f#,32c#,16c,8g#,32f#,16f,32c#,16d#,32f,f#",
 //    (char*)"Back to the Future:d=16,o=5,b=200:4g.,p,4c.,p,2f#.,p,g.,p,a.,p,8g,p,8e,p,8c,p,4f#,p,g.,p,a.,p,8g.,p,8d.,p,8g.,p,8d.6,p,4d.6,p,4c#6,p,b.,p,c#.6,p,2d.6",
 //    (char*)"Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#",
@@ -334,17 +335,17 @@ void dingdong() {
     // Special days :)
     int month = Time.month();
     int day = Time.day();
-    if (month == 1 && day == 20) {
+    if (
+        (month == 1 && day == 20)
+        || (month == 3 && day == 31)
+        || (month == 7 && day == 13)
+        || (month == 11 && day == 18)
+    ) {
       begin_rtttl(happyBirthday);
     }
-    else if (month == 3 && day == 31) {
-      begin_rtttl(happyBirthday);
-    }
-    else if (month == 7 && day == 13) {
-      begin_rtttl(happyBirthday);
-    }
-    else if (month == 11 && day == 18) {
-      begin_rtttl(happyBirthday);
+    else if (month == 10 && day == 31) {
+      //begin_rtttl(silence);
+      //Do Nothing
     }
     else if (random(5) == 0) {
       begin_rtttl(rickRoll);
@@ -387,7 +388,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length);
 
 char myIpString[24];
 
-byte server[] = { 10, 5, 23, 6 };
+byte server[] = { 10, 5, 22, 2 };
 
 // Set max mqtt message size to 1024 bytes
 MQTT mqttClient(server, 1883, MQTT_DEFAULT_KEEPALIVE, mqttCallback, 1024);
@@ -482,6 +483,8 @@ void setup(void) {
     Particle.function("doorbell", particle_dingdong);
     Particle.function("dingdong", particle_dingdong);
     Particle.function("beepbeep", particle_beepbeep);
+
+    Time.zone(-7);
 
     lastReset = millis();
 
